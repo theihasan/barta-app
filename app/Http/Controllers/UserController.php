@@ -53,7 +53,12 @@ class UserController extends Controller {
 
     public function showProfilePage(Request $request) {
         $user = Auth::user();
+<<<<<<< HEAD
 
+=======
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+>>>>>>> assignment-1
         return view('user.profile', ['user' => $user]);
     }
 
