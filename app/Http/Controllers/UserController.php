@@ -48,14 +48,13 @@ class UserController extends Controller {
 
     public function logout(Request $request) {
         Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect('/login')->with('loggedout', 'Successfully Logged Out');
     }
 
     public function showProfilePage(Request $request) {
         $user = Auth::user();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
 
         return view('user.profile', ['user' => $user]);
     }
