@@ -21,13 +21,21 @@
           </span>
       </div>
       @endif
-
+  
      
         <h1
           class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
           Create a new account
         </h1>
+
+          @if ($errors->any())
+              @foreach ($errors->all() as $error )
+                <li class="text-red-500">{{ $error }}</li>
+              @endforeach
+          @endif
       </div>
+
+      
 
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form class="space-y-6" action="/register" method="POST">
@@ -46,7 +54,7 @@
                 type="text"
                 autocomplete="name"
                 placeholder="Alp Arslan"
-                required
+                
                 class="block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" />
             </div>
           </div>
@@ -65,7 +73,7 @@
                 type="text"
                 autocomplete="username"
                 placeholder="alparslan1029"
-                required
+                
                 class="block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" />
             </div>
           </div>
@@ -84,7 +92,7 @@
                 type="email"
                 autocomplete="email"
                 placeholder="alp.arslan@mail.com"
-                required
+                
                 class="block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" />
             </div>
           </div>
@@ -103,7 +111,7 @@
                 type="password"
                 autocomplete="current-password"
                 placeholder="••••••••"
-                required
+                
                 class="block w-full rounded-md border-0 p-2 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" />
             </div>
           </div>

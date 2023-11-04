@@ -1,25 +1,23 @@
 <?php 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\UserInfoUpdateRequest;
+use App\Http\Requests\UserRegistrationRequest;
 
 class UserController extends Controller {
     public function registerView() {
         return view("user.register");
     }
 
-    public function register(Request $request) {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-        ]);
-
+    public function register(UserRegistrationRequest $request) {
+     
+        $validated = $request->validated();
+        
         $user = DB::table("users")->insertGetId([
             "name" => $request->name,
             "username" => $request->username,
@@ -65,14 +63,10 @@ class UserController extends Controller {
         return view('user.edit-profile', ['user' => $user]);
     }
 
-    public function updateProfile(Request $request) {
+    public function updateProfile(UserInfoUpdateRequest $request) {
         $user = Auth::user();
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8',
-        ]);
+        $request->validated();
 
         $userUpdateData = [
             'name' => $request->name,
