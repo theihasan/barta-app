@@ -1,4 +1,7 @@
 @extends('layout.admin')
+@push('title')
+  Login || Barta-App
+@endpush
 @section('maincontent')
 
 

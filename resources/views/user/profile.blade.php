@@ -1,4 +1,7 @@
 @extends('layout.app')
+@push('title')
+  Profile || Barta-App
+@endpush
 @section('main-section')
 
 
