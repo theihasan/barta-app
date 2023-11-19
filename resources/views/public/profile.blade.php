@@ -1,6 +1,7 @@
+
 @extends('layout.app')
 @push('title')
-  Profile || Barta-App
+{{$users[0]->name}} Profile || Barta-App
 @endpush
 @section('main-section')
 
@@ -13,59 +14,42 @@
     <div
       class="flex gap-4 justify-center flex-col text-center items-center">
       <div>
-         @if ($userAndPostData->isNotEmpty())
-            <h1 class="font-bold md:text-2xl"> {{$userAndPostData[0]->name}} </h1>
-            <p class="text-gray-700">{{$userAndPostData[0]->bio}}</p>
-        @endif
 
+        @if ($users->isNotEmpty())
+            <h1 class="font-bold md:text-2xl"> {{$users[0]->name}} </h1>
           
+            <p class="text-gray-700">{{$users[0]->bio}}</p>
+        @endif
+         
       </div>
     </div>
-    <a
-      href="/edit-profile"
-      type="button"
-      class="-m-2 flex gap-2 items-center rounded-full px-4 py-2 font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke-width="1.5"
-        stroke="currentColor"
-        class="w-5 h-5">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-      </svg>
-      Edit Profile
-    </a>
+   
   </section>
+
   <section
   id="newsfeed"
   class="space-y-6">
   <!-- Barta Card -->
-
-      @if (session('delete-success'))
-          <div class="bg-green-100 border border-green-400 text-black-700 px-4 py-3 rounded relative" role="alert">
-              <strong class="font-bold">Yeah</strong>
-              <span class="block sm:inline">{{ session('delete-success') }}</span>
-          </div> 
-    @endif
-    @foreach ( $userAndPostData as $post )
+  @if (session('delete-success'))
+  <div class="bg-green-100 border border-green-400 text-black-700 px-4 py-3 rounded relative" role="alert">
+      <strong class="font-bold">Yeah</strong>
+      <span class="block sm:inline">{{ session('delete-success') }}</span>
+  </div> 
+  @endif
+  
+        @foreach ($users as $user)
           <article
           class="bg-white border-2 border-black rounded-lg shadow mx-auto max-w-none px-4 py-5 sm:px-6">
-          <!-- Barta Card Top -->
           <header>
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
               
-                <!-- User Info -->
-             
+              
                 <!-- /User Info -->
               </div>
- 
+
               <!-- Card Action Dropdown -->
-            @if ($post->user_id == Auth::user()->id)
+           @if ($users[0]->id === Auth::user()->id )
               <div class="flex flex-shrink-0 self-center" x-data="{ open: false }">
                 <div class="relative inline-block text-left">
                   <div>
@@ -96,14 +80,14 @@
                       aria-labelledby="user-menu-button"
                       tabindex="-1">
                     <a
-                        href="/edit/{{$post->uuid}}"
+                        href="/edit/{{$user->uuid}}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                         tabindex="-1"
                         id="user-menu-item-0"
                     >Edit</a>
                     <a
-                        href="/delete/{{$post->uuid}}"
+                        href="/delete/{{$user->uuid}}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                         tabindex="-1"
@@ -113,19 +97,18 @@
                   </div>
                 </div>
               </div>
-            @endif
+          @endif
               <!-- /Card Action Dropdown -->
             </div>
           </header>
-
+         
           <!-- Content -->
-          <a href="/{{$post->uuid}}">
+          <a href="/{{$user->uuid}}">
             <div class="py-4 text-gray-700 font-normal">
-                {{ $post->post_content }}
+                {{$user->post_content}}
             </div>
         </a>
         
-
           <!-- Date Created & View Stat -->
           <div class="flex items-center gap-2 text-gray-500 text-xs my-2">
             <span class="">6 minutes ago</span>
@@ -136,7 +119,7 @@
         
           <!-- /Barta Card Bottom -->
         </article>
-    @endforeach
+        @endforeach
 
             
       
@@ -146,7 +129,6 @@
 
   <!-- /Barta Card With Image -->
 </section>
-
 </main>
 
 

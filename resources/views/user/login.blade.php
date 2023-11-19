@@ -1,8 +1,11 @@
 @extends('layout.admin')
+@push('title')
+  Login || Barta-App
+@endpush
 @section('maincontent')
 
 
-@if (!Auth::check())
+
 <body class="h-full">
   <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -63,6 +66,7 @@
               id="email"
               name="email"
               type="email"
+              value="{{old('email')}}"
               autocomplete="email"
               placeholder="bruce@wayne.com"
               required
@@ -117,9 +121,7 @@
     </div>
   </div>
 </body>
-@else
-Your are Logged in. Go to <a href="/home">Home</a>
-@endif
+
 
 
 

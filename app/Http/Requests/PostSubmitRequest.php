@@ -2,16 +2,17 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserRegistrationRequest extends FormRequest
+class PostSubmitRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return Auth::check();
     }
 
     /**
@@ -22,10 +23,14 @@ class UserRegistrationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
+           "postcontent"=> "required",
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            "postcontent"=> "You have to write something to post",
         ];
     }
 }

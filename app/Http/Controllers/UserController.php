@@ -28,6 +28,7 @@ class UserController extends Controller {
         ]);
 
         if ($user) {
+           
             return redirect("/login")->with("register-success", "Registration successful! Please login.");
         } else {
             return view("user.register", ['message' => 'Email Already Exists']);
@@ -36,13 +37,19 @@ class UserController extends Controller {
 
     public function login(Request $request) {
         $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            return redirect('/home')->with('loggedin', 'Successfully Logged In');
+    
+        if (Auth::attempt($credentials, true)) {
+            
+            
+            return redirect()->route('home');
+           
+            
         } else {
             return redirect('/login')->with('login-error', 'Sorry, credentials do not match');
         }
     }
+    
+    
 
     public function logout(Request $request) {
         Auth::logout();
@@ -52,9 +59,11 @@ class UserController extends Controller {
     }
 
     public function showProfilePage(Request $request) {
-        $user = Auth::user();
-
-        return view('user.profile', ['user' => $user]);
+        $user = DB::table('posts')
+       ->join('users', 'posts.user_id', '=', 'users.id')
+       ->select('posts.*', 'users.*')
+       ->where("users.id",Auth::user()->id)->get();
+        return view('user.profile', ['userAndPostData' => $user]);
     }
 
     public function showProfileData() {

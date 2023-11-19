@@ -1,4 +1,7 @@
 @extends('layout.admin')
+@push('title')
+  Register || Barta-App
+@endpush
 @section('maincontent')
   <body class="h-full">
     <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -52,11 +55,15 @@
                 id="name"
                 name="name"
                 type="text"
+                value="{{old('name')}}"
                 autocomplete="name"
                 placeholder="Alp Arslan"
                 
                 class="block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" />
             </div>
+            @error('name')
+              <span>{{$message}}</span>
+            @enderror
           </div>
 
           <!-- Username -->
@@ -70,12 +77,16 @@
               <input
                 id="username"
                 name="username"
+                value="{{old('username')}}"
                 type="text"
                 autocomplete="username"
                 placeholder="alparslan1029"
                 
                 class="block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" />
             </div>
+            @error('username')
+            <span class="text-red-500">{{$message}}</span>
+            @enderror
           </div>
 
           <!-- Email -->
@@ -90,11 +101,15 @@
                 id="email"
                 name="email"
                 type="email"
+                value="{{old('email')}}"
                 autocomplete="email"
                 placeholder="alp.arslan@mail.com"
                 
                 class="block w-full rounded-md border-0 p-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6" />
             </div>
+            @error('email')
+            <span class="text-red-500">{{$message}}</span>
+            @enderror
           </div>
 
           <!-- Password -->
