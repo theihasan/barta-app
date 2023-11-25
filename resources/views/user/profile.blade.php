@@ -13,12 +13,10 @@
     <div
       class="flex gap-4 justify-center flex-col text-center items-center">
       <div>
-         @if ($userAndPostData->isNotEmpty())
-            <h1 class="font-bold md:text-2xl"> {{$userAndPostData[0]->name}} </h1>
-            <p class="text-gray-700">{{$userAndPostData[0]->bio}}</p>
-        @endif
-
-          
+          @if (Auth::user()->id)
+            <h1 class="font-bold md:text-2xl"> {{Auth::user()->name}} </h1>
+            <p class="text-gray-700">{{Auth::user()->bio}}</p>
+          @endif
       </div>
     </div>
     <a
@@ -51,7 +49,7 @@
               <span class="block sm:inline">{{ session('delete-success') }}</span>
           </div> 
     @endif
-    @foreach ( $userAndPostData as $post )
+    @foreach ( $userPostDatas as $userPostData )
           <article
           class="bg-white border-2 border-black rounded-lg shadow mx-auto max-w-none px-4 py-5 sm:px-6">
           <!-- Barta Card Top -->
@@ -65,7 +63,7 @@
               </div>
  
               <!-- Card Action Dropdown -->
-            @if ($post->user_id == Auth::user()->id)
+            @if ($userInfo->id == Auth::user()->id)
               <div class="flex flex-shrink-0 self-center" x-data="{ open: false }">
                 <div class="relative inline-block text-left">
                   <div>
@@ -96,14 +94,14 @@
                       aria-labelledby="user-menu-button"
                       tabindex="-1">
                     <a
-                        href="/edit/{{$post->uuid}}"
+                        href="{{route('post.edit',['postuuid' => $userPostData->uuid])}}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                         tabindex="-1"
                         id="user-menu-item-0"
                     >Edit</a>
                     <a
-                        href="/delete/{{$post->uuid}}"
+                        href="/delete/{{$userPostData->uuid}}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                         tabindex="-1"
@@ -119,9 +117,9 @@
           </header>
 
           <!-- Content -->
-          <a href="/{{$post->uuid}}">
+          <a href="{{route('post.single', ['postuuid' => $userPostData->uuid])}}">
             <div class="py-4 text-gray-700 font-normal">
-                {{ $post->post_content }}
+                {{ $userPostData->post_content }}
             </div>
         </a>
         
@@ -130,7 +128,7 @@
           <div class="flex items-center gap-2 text-gray-500 text-xs my-2">
             <span class="">6 minutes ago</span>
             <span class="">•</span>
-            <span>450 views</span>
+            <span>{{ $userPostData->views }}</span>
           </div>
 
         

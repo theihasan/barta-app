@@ -15,12 +15,14 @@ class PostSeeder extends Seeder
     public function run()
     {
         $faker = Faker::create();
-
-        for ($i = 0; $i < 50; $i++) {
-            DB::table("posts")->insert([
-                'post_content' => $faker->paragraph,
-                'user_id' => $faker->randomNumber(),
-                'created_at' => now(),
+        $userIds = DB::table('users')->pluck('id')->toArray();
+        for ($i = 0; $i < 49950; $i++) {
+            $postContent = implode("\n", $faker->paragraphs());
+            DB::table('posts')->insert([
+                'post_content' => $postContent,
+                'uuid'         => $faker->uuid(),
+                'user_id'      => $faker->randomElement($userIds), // Randomly select a user ID
+                'created_at'   => now(),
             ]);
         }
     }

@@ -1,7 +1,7 @@
 
 @extends('layout.app')
 @push('title')
-{{$users[0]->name}} Profile || Barta-App
+{{$publicuserInfo->name}} Profile || Barta-App
 @endpush
 @section('main-section')
 
@@ -15,11 +15,11 @@
       class="flex gap-4 justify-center flex-col text-center items-center">
       <div>
 
-        @if ($users->isNotEmpty())
-            <h1 class="font-bold md:text-2xl"> {{$users[0]->name}} </h1>
+     
+            <h1 class="font-bold md:text-2xl"> {{$publicuserInfo->name}} </h1>
           
-            <p class="text-gray-700">{{$users[0]->bio}}</p>
-        @endif
+            <p class="text-gray-700">{{$publicuserInfo->bio}}</p>
+       
          
       </div>
     </div>
@@ -36,8 +36,8 @@
       <span class="block sm:inline">{{ session('delete-success') }}</span>
   </div> 
   @endif
-  
-        @foreach ($users as $user)
+
+        @foreach ($userPosts as $userPost)
           <article
           class="bg-white border-2 border-black rounded-lg shadow mx-auto max-w-none px-4 py-5 sm:px-6">
           <header>
@@ -49,7 +49,7 @@
               </div>
 
               <!-- Card Action Dropdown -->
-           @if ($users[0]->id === Auth::user()->id )
+           @if ($publicuserInfo->id === Auth::user()->id )
               <div class="flex flex-shrink-0 self-center" x-data="{ open: false }">
                 <div class="relative inline-block text-left">
                   <div>
@@ -87,13 +87,13 @@
                         id="user-menu-item-0"
                     >Edit</a>
                     <a
-                        href="/delete/{{$user->uuid}}"
-                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        tabindex="-1"
-                        id="user-menu-item-1"
-                        onclick="alert('Are You sure to delete this item? It cannot recover in future')"
-                    >Delete</a>
+                    href="/delete/{{$user->uuid}}"
+                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    role="menuitem"
+                    tabindex="-1"
+                    id="user-menu-item-1"
+                    onclick="return confirm('Are you sure to delete this item? It cannot be recovered in the future.');">Delete</a>
+                
                   </div>
                 </div>
               </div>
@@ -101,11 +101,12 @@
               <!-- /Card Action Dropdown -->
             </div>
           </header>
-         
+          
           <!-- Content -->
-          <a href="/{{$user->uuid}}">
+          <a href="{{route('post.single',['postuuid' => $userPost->uuid])}}">
             <div class="py-4 text-gray-700 font-normal">
-                {{$user->post_content}}
+              
+                {{$userPost->post_content}}
             </div>
         </a>
         

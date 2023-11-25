@@ -8,39 +8,44 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\PostSubmitRequest;
-
+use App\Services\PostService;
 class PostController extends Controller
 {
-    public function addPost(PostSubmitRequest $request){
-        $request->validated();
-        $post = DB::table("posts")->insert([
-            "uuid"              => Str::uuid(),
-            "post_content"      => $request->postcontent,
-            "user_id"           => Auth::user()->id,
-            "created_at"        => now(),
-        ]);
+    protected $postService;
+    public function __construct(PostService $postService){
+        $this->postService = $postService;
+    }
+
+
+    public function create(PostSubmitRequest $request){
+        $post = $this->postService->createPost($request);
+        
         return redirect()->back()->with("post-success","Posted Successfully");
 
     }
 
-    public function updatePostData($uuid){
+    public function show($postuuid)
+    {
+        $post = $this->postService->getPostData($postuuid);
+        return view('public.single-post',$post);
+    }
+
+
+
+
+    public function edit($uuid){
         $post = DB::table("posts")->where('uuid', '=', $uuid)->first();
         return view('user.edit-post', ['post'=> $post]);
     }
 
-    public function updatePost( PostSubmitRequest $request, $uuid){
-        $request->validated();
-        $post = DB::table('posts')->where('uuid', $uuid)->update([
-            'post_content'  => $request->postcontent,
-            'created_at'    => now(),
-        ]);
+    public function update( PostSubmitRequest $request, $uuid)
+    {
+        $post = $this->postService->updatePost($request,$uuid);
         return redirect()->back()->with('post-updated','Post Updated successfully');
     }
 
-    public function deletePost($uuid){
-        $post = DB::table('posts')
-        ->where('uuid', $uuid)
-        ->delete();
+    public function delete($uuid){
+        $post = $this->postService->deletePost($uuid);
         return redirect()->back()->with('delete-success','Post Delete successfully');
     }
 

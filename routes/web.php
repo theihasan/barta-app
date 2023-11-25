@@ -1,53 +1,39 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomePageController;
+use App\Http\Controllers\SinglePostController;
+use App\Http\Controllers\PublicProfileController;
 
 
-//User Oparation Route
 Route::get('/', function () {
     return view('user.login');
-});
-Route::get('/login', function (){
-    return view('user.login');
-})->name('login');
-
-
-Route::middleware(['guest'])->group(function(){
-    
-  
-    Route::post('/login', [UserController::class,'login']);
-    Route::get('/logout', [UserController::class,'logout']);
-    
-    Route::get('/register', [UserController::class,'registerView']);
-    Route::post('/register', [UserController::class,'register']);
-});
+})->middleware('guest');
 
 
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [UserController::class,'showProfilePage']);
-    Route::get('/edit-profile', [UserController::class,'showProfileData']);
-    Route::post('/profile-update', [UserController::class,'updateProfile']);
-    Route::get('/profile/{username}', [PublicController::class,'publicProfile']);
+Route::middleware('auth')->group(function () {
 
+    Route::get('/home', [HomePageController::class, 'index'])->name('home');
+   
+    Route::get('/profile', [ProfileController::class, 'index']);
+    Route::patch('/edit-profile', [UserController::class,'updateProfile']);
 
-    Route::get('/home', [PublicController::class, 'homePagePost'])->name('home');
+    Route::get('/profile/{username}', [PublicProfileController::class,'index'])->name('public.profile');
 
-    //Post Oparation Route 
-    Route::post('/addpost', [PostController::class, 'addPost']);
-    Route::get('/{postuuid}', [PublicController::class, 'singlePostShow']);
-    Route::get('/edit/{uuid}', [PostController::class, 'updatePostData']);
-    Route::put('/edit/{uuid}', [PostController::class, 'updatePost']);
-    Route::get('/delete/{uuid}', [PostController::class,'deletePost']);
+    Route::post('/addpost', [PostController::class, 'create'])->name('post.create');
+    Route::get('/posts/{postuuid}', [PostController::class, 'show'])->name('post.single');
+    Route::get('/edit/{postuuid}', [PostController::class, 'edit'])->name('post.edit');
+    Route::put('/edit/{postuuid}', [PostController::class, 'update'])->name('post.update');
+    Route::get('/delete/{postuuid}', [PostController::class,'delete'])->name('post.delete');
+
+    Route::post('/add-comment/{id}', [CommentController::class,'create'])->name('comment.create');
+
 });
 
-
-
-
-
-
-
+require __DIR__.'/auth.php';

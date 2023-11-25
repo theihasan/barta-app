@@ -164,7 +164,7 @@
                 </header>
       
                 <!-- Content -->
-                <a href="/{{$post->uuid}}">
+                <a href="{{route('post.single',['postuuid' => $post->uuid])}}">
                   <div class="py-4 text-gray-700 font-normal">
                       {{ $post->post_content }}
                   </div>
@@ -173,9 +173,15 @@
       
                 <!-- Date Created & View Stat -->
                 <div class="flex items-center gap-2 text-gray-500 text-xs my-2">
-                  <span class="">6 minutes ago</span>
+                  <span class=""> 
+                    @if ($post->updated_at)
+                      {{$post->updated_at}}
+                    @else
+                      {{$post->created_at}}
+                    @endif
+                  </span>
                   <span class="">•</span>
-                  <span>450 views</span>
+                  <span>{{$post->views}}</span>
                 </div>
       
               
