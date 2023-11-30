@@ -13,16 +13,23 @@
     <!-- Profile Info -->
     <div
       class="flex gap-4 justify-center flex-col text-center items-center">
+  
+          @if(isset($profilePicture))
+              <img
+              class="h-32 w-32 rounded-full"
+              src="{{$profilePicture}}"
+              alt="{{$publicuserInfo->name}}" />
+          @endif
       <div>
-
-     
-            <h1 class="font-bold md:text-2xl"> {{$publicuserInfo->name}} </h1>
           
-            <p class="text-gray-700">{{$publicuserInfo->bio}}</p>
-       
-         
+          <h1 class="font-bold md:text-2xl">{{$publicuserInfo->name}}</h1>
+          <p class="text-gray-700">{{$publicuserInfo->bio}}</p>
+          
       </div>
     </div>
+
+
+  
    
   </section>
 
@@ -37,7 +44,9 @@
   </div> 
   @endif
 
-        @foreach ($userPosts as $userPost)
+     @foreach (($publicuserInfo['posts']) as $postInfo)
+       
+     
           <article
           class="bg-white border-2 border-black rounded-lg shadow mx-auto max-w-none px-4 py-5 sm:px-6">
           <header>
@@ -49,7 +58,7 @@
               </div>
 
               <!-- Card Action Dropdown -->
-           @if ($publicuserInfo->id === Auth::user()->id )
+           @if ($publicuserInfo->id === Auth::user()->id)
               <div class="flex flex-shrink-0 self-center" x-data="{ open: false }">
                 <div class="relative inline-block text-left">
                   <div>
@@ -80,14 +89,14 @@
                       aria-labelledby="user-menu-button"
                       tabindex="-1">
                     <a
-                        href="/edit/{{$user->uuid}}"
+                        href="{{route('post.edit', ['postuuid' =>  $postInfo->uuid])}}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                         tabindex="-1"
                         id="user-menu-item-0"
                     >Edit</a>
                     <a
-                    href="/delete/{{$user->uuid}}"
+                    href="{{route('post.delete', ['postuuid' =>  $postInfo->uuid])}}"
                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     role="menuitem"
                     tabindex="-1"
@@ -97,24 +106,29 @@
                   </div>
                 </div>
               </div>
-          @endif
+           @endif
+           
+          
               <!-- /Card Action Dropdown -->
             </div>
           </header>
           
           <!-- Content -->
-          <a href="{{route('post.single',['postuuid' => $userPost->uuid])}}">
+          <a href="{{route('post.single', ['postuuid' =>  $postInfo->uuid])}}">
             <div class="py-4 text-gray-700 font-normal">
-              
-                {{$userPost->post_content}}
+              {{ $postInfo->post_content }}
+              <img src="{{$postImage}}" alt="{{$postImage}}">
+                
             </div>
         </a>
         
           <!-- Date Created & View Stat -->
           <div class="flex items-center gap-2 text-gray-500 text-xs my-2">
-            <span class="">6 minutes ago</span>
+            <span class="">{{$postInfo->created_at->diffForHumans(parts:2)}}</span>
             <span class="">•</span>
-            <span>450 views</span>
+            <span class="">{{$postInfo['comments']->count()}} comments</span>
+            <span class="">•</span>
+            <span>{{$postInfo->views}} views</span>
           </div>
 
         

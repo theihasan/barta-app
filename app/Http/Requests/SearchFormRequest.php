@@ -2,17 +2,16 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PostSubmitRequest extends FormRequest
+class SearchFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return true;
     }
 
     /**
@@ -23,15 +22,7 @@ class PostSubmitRequest extends FormRequest
     public function rules(): array
     {
         return [
-           "post_content" => "required",
-           'picture' => 'nullable|image|mimetypes:image/jpeg,image/png',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            "post_content"=> "You have to write something to post",
+            "query"=> "required|string",
         ];
     }
 }

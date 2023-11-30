@@ -1,30 +1,37 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\UserInfoUpdateRequest;
-use Illuminate\Support\Facades\Redirect;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\UserInfoUpdateRequest;
 
 class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
      */
+    
     public function index(Request $request): View
-    {
-        $userInfo = DB::table("users")->where("id", Auth::user()->id)->first();
-      
-        $userPost = DB::table('posts')
-       ->where("user_id",Auth::user()->id)->get();
-      
+    {   
+        $user = Auth::user();
+        $profilePicture = $user->getFirstMediaUrl('profile_picture');
+        $userInfo = Post::with(['user', 'media','comments'])
+        ->orderBy('views','desc')
+        ->where('user_id', $user->id)->get();
+        
         return view('user.profile', [
-            'userPostDatas' => $userPost,
-            'userInfo'      => $userInfo,
+            'userInfos'          => $userInfo,
+            'profilePicture'    => $profilePicture,
+            
+            
         ]);
     }
 

@@ -10,6 +10,7 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
+        "spatie/laravel-medialibrary": "^10.15",
         "timwassenburg/laravel-service-generator": "^1.0"
     },
     "require-dev": {

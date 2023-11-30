@@ -1,6 +1,6 @@
 @extends('layout.app')
 @push('title')
-    Single post from {{Auth::user()->name}} || Barta-App
+    Single post from {{$postData['name']}} || Barta-App
 @endpush
 @section('main-section')
 @if ($postData)
@@ -20,22 +20,22 @@ class="container max-w-2xl mx-auto space-y-8 mt-8 px-2 md:px-0 min-h-screen">
           <!-- User Info -->
           <div class="text-gray-900 flex flex-col min-w-0 flex-1">
             <a
-            href="/profile/{{$postData->username}}"
+            href="{{route('public.profile', ['username' => $postData['username']])}}"
             class="hover:underline font-semibold line-clamp-1">
-            {{$postData->name}}
+            {{$postData['name']}}
           </a>
 
           <a
-          href="/profile/{{$postData->username}}"
+          href="{{route('public.profile', ['username' => $postData['username']])}}"
           class="hover:underline font-semibold line-clamp-1">
-          {{$postData->username}}
+          {{$postData['username']}}
         </a>
           </div>
           <!-- /User Info -->
         </div>
-
+       
         <!-- Card Action Dropdown -->
-        @if ($postData->user_id === Auth::user()->id )
+        @if ($postData['post']->user_id === Auth::user()->id )
         <div
           class="flex flex-shrink-0 self-center"
           x-data="{ open: false }">
@@ -95,25 +95,29 @@ class="container max-w-2xl mx-auto space-y-8 mt-8 px-2 md:px-0 min-h-screen">
     <!-- Content -->
 
         <div class="py-4 text-gray-700 font-normal">
-           {{$postData->post_content}}
+          {{ $postData['post']->post_content }}
+          @if ($image)
+            <img src="{{$image}}" alt="{{$postData['name']}}">
+          @endif
+          
         </div>
  
       
 
     <!-- Date Created & View Stat -->
     <div class="flex items-center gap-2 text-gray-500 text-xs my-2">
-      <span class="">6 minutes ago</span>
+      <span class=""> {{ $postData['post']->created_at->diffForHumans(parts:2) }}</span>
       <span class="">•</span>
       <span>{{$totalComment}} comments</span>
       <span class="">•</span>
-      <span>{{$postData->views}} views</span>
+      <span>{{ $postData['post']->views }} views</span>
     </div>
 
     <hr class="my-6" />
 
     <!-- Barta Create Comment Form -->
     <form
-      action="{{route('comment.create',['id' => $postData->id])}}"
+      action="{{route('comment.create', ['postid' => $postData['post']->uuid])}}"
       method="POST">
       @csrf
       <!-- Create Comment Card Top -->
@@ -140,7 +144,7 @@ class="container max-w-2xl mx-auto space-y-8 mt-8 px-2 md:px-0 min-h-screen">
               x-init="resize()"
               @input="resize()"
               type="text"
-              name="comment"
+              name="comments"
               placeholder="Write a comment..."
               class="flex w-full h-auto min-h-[40px] px-3 py-2 text-sm bg-gray-100 focus:bg-white border border-sm rounded-lg border-neutral-300 ring-offset-background placeholder:text-neutral-400 focus:border-neutral-300 focus:outline-none focus:ring-1 focus:ring-offset-0 focus:ring-neutral-400 disabled:cursor-not-allowed disabled:opacity-50 text-gray-900"></textarea>
               @error('comment')
@@ -182,9 +186,10 @@ class="container max-w-2xl mx-auto space-y-8 mt-8 px-2 md:px-0 min-h-screen">
     <article
       class="bg-white border-2 border-black rounded-lg shadow mx-auto max-w-none px-4 py-2 sm:px-6 min-w-full divide-y">
       <!-- Comments -->
-    
+
     
     @if (count($comments) > 0)
+  
       <!-- Comment 1 -->
         @foreach ($comments as $comment)
             
@@ -196,15 +201,15 @@ class="container max-w-2xl mx-auto space-y-8 mt-8 px-2 md:px-0 min-h-screen">
                     <!-- User Info -->
                     <div class="text-gray-900 flex flex-col min-w-0 flex-1">
                         <a
-                        href="{{route('public.profile',['username' => $comment->username])}}"
+                        href="{{route('public.profile',['username' => $comment['user']->username])}}"
                         class="hover:underline font-semibold line-clamp-1">
-                        {{$comment->name}}
+                        {{$comment['user']->name}}
                         </a>
 
                         <a
-                        href="{{route('public.profile',['username' => $comment->username])}}"
+                        href="{{route('public.profile',['username' => $comment['user']->username])}}"
                         class="hover:underline text-sm text-gray-500 line-clamp-1">
-                        {{$comment->username}}
+                        {{$comment['user']->username}}
                         </a>
                     </div>
                     <!-- /User Info -->
@@ -215,11 +220,12 @@ class="container max-w-2xl mx-auto space-y-8 mt-8 px-2 md:px-0 min-h-screen">
                 <!-- Content -->
                 <div class="py-4 text-gray-700 font-normal">
                 <p>{{$comment->comments}}</p>
+                
                 </div>
 
                 <!-- Date Created -->
                 <div class="flex items-center gap-2 text-gray-500 text-xs">
-                <span class="">6m ago</span>
+                <span class="">{{$comment->created_at->diffForHumans(parts:2)}}</span>
                 </div>
             </div>
         <!-- /Comment 1 -->

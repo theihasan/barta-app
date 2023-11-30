@@ -12,6 +12,13 @@
     <!-- Profile Info -->
     <div
       class="flex gap-4 justify-center flex-col text-center items-center">
+      
+      @if(isset($profilePicture))
+          <img
+          class="h-32 w-32 rounded-full"
+          src="{{$profilePicture}}"
+          alt="Ahmed Shamim Hasan Shaon" />
+      @endif
       <div>
           @if (Auth::user()->id)
             <h1 class="font-bold md:text-2xl"> {{Auth::user()->name}} </h1>
@@ -49,7 +56,10 @@
               <span class="block sm:inline">{{ session('delete-success') }}</span>
           </div> 
     @endif
-    @foreach ( $userPostDatas as $userPostData )
+  
+@foreach ($userInfos as $userInfo)
+  
+
           <article
           class="bg-white border-2 border-black rounded-lg shadow mx-auto max-w-none px-4 py-5 sm:px-6">
           <!-- Barta Card Top -->
@@ -61,9 +71,9 @@
              
                 <!-- /User Info -->
               </div>
- 
+
               <!-- Card Action Dropdown -->
-            @if ($userInfo->id == Auth::user()->id)
+            @if ($userInfo->user_id == Auth::user()->id)
               <div class="flex flex-shrink-0 self-center" x-data="{ open: false }">
                 <div class="relative inline-block text-left">
                   <div>
@@ -94,19 +104,19 @@
                       aria-labelledby="user-menu-button"
                       tabindex="-1">
                     <a
-                        href="{{route('post.edit',['postuuid' => $userPostData->uuid])}}"
+                        href="{{route('post.edit',['postuuid' => $userInfo->uuid])}}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                         tabindex="-1"
                         id="user-menu-item-0"
                     >Edit</a>
                     <a
-                        href="/delete/{{$userPostData->uuid}}"
+                        href="{{route('post.delete',['postuuid' => $userInfo->uuid])}}"
                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
                         tabindex="-1"
                         id="user-menu-item-1"
-                        onclick="alert('Are You sure to delete this item? It cannot recover in future')"
+                        onclick="confirm('Are You sure to delete this item? It cannot recover in future')"
                     >Delete</a>
                   </div>
                 </div>
@@ -117,26 +127,39 @@
           </header>
 
           <!-- Content -->
-          <a href="{{route('post.single', ['postuuid' => $userPostData->uuid])}}">
-            <div class="py-4 text-gray-700 font-normal">
-                {{ $userPostData->post_content }}
+          <a href="{{route('post.single', ['postuuid' => $userInfo->uuid])}}">
+            <div class="py-4 text-gray-700 font-normal text-justify">
+              {{$userInfo->post_content}}
+             
+            
+              @foreach ($userInfo->media as $image)
+               
+                  <img class="object-contain h-48 w-96 my-10" 
+                  src="{{$image->getUrl()}}" 
+                  alt="{{$userInfo->name}}">
+              @endforeach
+
             </div>
         </a>
         
 
           <!-- Date Created & View Stat -->
           <div class="flex items-center gap-2 text-gray-500 text-xs my-2">
-            <span class="">6 minutes ago</span>
+            <span class="">{{$userInfo->created_at->diffForHumans(parts:2)}}</span>
             <span class="">•</span>
-            <span>{{ $userPostData->views }}</span>
+            <span class="">{{$userInfo->comments->count()}} comments</span>
+            <span class="">•</span>
+            <span>{{$userInfo->views}} views</span>
           </div>
 
         
           <!-- /Barta Card Bottom -->
         </article>
-    @endforeach
+    
+  @endforeach
 
-            
+
+
       
 
 

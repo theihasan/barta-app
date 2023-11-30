@@ -1,7 +1,10 @@
 <?php
 
 namespace App\Services;
+use App\Models\Post;
+use App\Models\Comment;
 use Illuminate\Support\Str;
+use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\PostSubmitRequest;
@@ -10,57 +13,75 @@ class PostService
 {
     public function createPost(PostSubmitRequest $request)
     {
-        $request->validated();
+        $validatedData = $request->validated();
+        $validatedData['user_id'] = Auth::user()->id;
+        $validatedData['uuid'] = Str::uuid();
+        try {
+            DB::beginTransaction();
+            $post = Post::create($validatedData);
 
-        $uuid = Str::uuid();
-
-        DB::table("posts")->insert([
-            "uuid" => $uuid,
-            "post_content" => $request->postcontent,
-            "user_id" => Auth::user()->id,
-            "created_at" => now(),
-        ]);
-
-        
+            if($request->hasFile('picture')){
+                $media = $post->addMedia($request->file('picture'))->toMediaCollection('post_image');
+            }
+            DB::commit();
+            return $post;
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return $th;
+        }
+    
     }
 
 
-    public function getPostData($postuuid)
-    {
-        DB::table('posts')->where('uuid', $postuuid)->increment('views');
+    public function getPostData($postUuid)
+        {
+            $post = Post::where('uuid', $postUuid)->firstOrFail();
+            $post->increment('views');
+            $imageUrl = $post->getFirstMediaUrl('post_image');
+            $totalComments = $post->comments->count();
 
-        $totalComment = DB::table('comments')->where('uuid', $postuuid)->count();
 
-        $postData = DB::table('posts')
-            ->join('users', 'posts.user_id', '=', 'users.id')
-            ->select('users.name', 'users.username', 'posts.*')
-            ->where('uuid', $postuuid)
-            ->first();
+            $postData = [
+                'name'      => $post->user->name,
+                'username'  => $post->user->username,
+                'post'      => $post,
+            ];
 
-        $comments = DB::table('comments')
-            ->join('users', 'comments.user_id', '=', 'users.id')
-            ->select('users.name', 'users.username', 'comments.*')
-            ->where('comments.uuid', $postuuid)
-            ->orderBy('comments.created_at', 'desc')
-            ->get();
+            $comments = Comment::with('user')
+                        ->where('uuid',$postUuid)
+                        ->orderBy('created_at','desc')
+                        ->get();
 
-        return [
-            'postData' => $postData,
-            'comments' => $comments,
-            'totalComment' => $totalComment,
-        ];
-    }
+            return [
+                'postData' => $postData,
+                'comments' => $comments,
+                'totalComment' => $totalComments,
+                'image'         => $imageUrl,
+                ];
+        }
 
 
 
     public function updatePost(PostSubmitRequest $request, $uuid)
     {
-        $request->validated();
+        $validatedData = $request->validated();
+      
+        $post = Post::where('uuid', $uuid)->firstOrFail();
+       
+        return DB::transaction(function () use ($request, $uuid, $validatedData){
+            
+            $post = Post::where('uuid', $uuid)->firstOrFail();
+            $post->update($validatedData);
+            
+            if ($request->hasFile('picture')) {
+                $post->clearMediaCollection('post_image');
+                $media = $post->addMedia($request->file('picture'))
+                ->toMediaCollection('post_image');
+            }
+            
+            return $post;
+    }, 5);
 
-        DB::table('posts')->where('uuid', $uuid)->update([
-            'post_content' => $request->postcontent,
-            'created_at' => now(),
-        ]);
     }
 
     

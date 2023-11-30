@@ -2,12 +2,27 @@
 @push('title')
   Edit Profile || Barta-App
 @endpush
+@push('script')
+<script>
+  function previewImage() {
+      var input = document.getElementById('avatar');
+      var imgPreview = document.getElementById('imagePreview');
+      if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+              imgPreview.src = e.target.result;
+          };
+          reader.readAsDataURL(input.files[0]);
+      }
+  }
+</script>
+@endpush
 @section('main-section')
 <main
 class="container max-w-xl mx-auto space-y-8 mt-8 px-2 md:px-0 min-h-screen">
 <!-- Profile Edit Form -->
 
-<form action="/edit-profile" method="POST">
+<form action="{{route('profile.edit')}}" method="POST" enctype="multipart/form-data">
   @method('PATCH')
   <div class="space-y-12">
     <div class="border-b border-gray-900/10 pb-12">
@@ -39,6 +54,35 @@ class="container max-w-xl mx-auto space-y-8 mt-8 px-2 md:px-0 min-h-screen">
       @endif
 
       <div class="mt-10 border-b border-gray-900/10 pb-12">
+
+        <div class="col-span-full mt-10 pb-10">
+          <label
+            for="photo"
+            class="block text-sm font-medium leading-6 text-gray-900"
+            >Photo</label
+          >
+          <div class="mt-2 flex items-center gap-x-3">
+            <input class="hidden" 
+            type="file" 
+            name="avatar" 
+            id="avatar" 
+            onchange="previewImage()" />
+
+            @if ($profilePicture)
+  
+              <img class="h-32 w-32 rounded-full" 
+              src="{{$profilePicture}}" 
+              alt="Ahmed Shamim Hasan Shaon" 
+              id="imagePreview" />
+            @endif
+            <label for="avatar">
+              <div
+                class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                Change
+              </div>
+            </label>
+          </div>
+        </div>
 
         <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div class="sm:col-span-full">

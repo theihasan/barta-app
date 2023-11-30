@@ -13,7 +13,7 @@ x-data="{ open: false }">
     <span class="sr-only">Open user menu</span>
     <img
       class="h-8 w-8 rounded-full"
-      src="https://avatars.githubusercontent.com/u/831997"
+      src="{{Auth::user()->getFirstMediaUrl('profile_picture')}}"
       alt="Ahmed Shamim Hasan Shaon" />
   </button>
 </div>
